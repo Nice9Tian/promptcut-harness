@@ -1,0 +1,2 @@
+# The package is published from a working tree: keep every text file LF on every platform.
+* text=auto eol=lf
