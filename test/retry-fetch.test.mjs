@@ -1,6 +1,13 @@
 // node --test test/retry-fetch.test.mjs: automatic retry for direct API
-import { test } from 'node:test';
+import { test, after } from 'node:test';
 import assert from 'node:assert/strict';
+
+// The idle timer is unref'd on purpose (idle-timeout.mjs): a request has other ways to end, and the
+// timer must not hold a process open. In these tests it is the only thing pending, and before
+// Node 24 the test runner then ends the file with "Promise resolution is still pending but the
+// event loop has already resolved". Hold the loop open for as long as this file runs.
+const keepAlive = setInterval(() => {}, 1 << 30);
+after(() => clearInterval(keepAlive));
 
 const { createRetryingFetch, RETRYABLE_STATUS, backoffMs, DEFAULT_RETRY, isRetryableSseError } =
   await import('../retry-fetch.mjs');

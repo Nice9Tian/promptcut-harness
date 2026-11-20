@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { builtinModules } from 'node:module';
+import { isBuiltin } from 'node:module';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -30,9 +30,6 @@ import {
 } from '../index.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const NODE_BUILTINS = new Set(
-  builtinModules.flatMap((m) => (m.startsWith('node:') ? [m, m.slice(5)] : [m, `node:${m}`])),
-);
 
 function commentRanges(src) {
   const ranges = [];
@@ -99,7 +96,7 @@ test('zero external dependencies: all imports stay within package root or node:*
       if (inComment(comments, m.index)) continue;
       const spec = m[1] || m[2] || m[3];
       if (spec.startsWith('node:')) {
-        if (!NODE_BUILTINS.has(spec)) violations.push(`${rel}: invalid node builtin ${spec}`);
+        if (!isBuiltin(spec)) violations.push(`${rel}: invalid node builtin ${spec}`);
         continue;
       }
       if (!spec.startsWith('.')) {
