@@ -95,6 +95,17 @@ await compactHistory(agent.history, { provider, keepRecent: 4 });
 | `./model-limits` / `./output-speed` | Per-model output token caps & adaptive throughput limiter |
 | `./smoke` | Self-contained mock-provider end-to-end smoke runner |
 
+## Development
+
+```bash
+node --test      # the whole suite; there is no install step, the package has no dependencies
+node smoke.mjs   # end-to-end run against the mock provider
+```
+
+CI runs both on Node 20, 22 and 24, on Linux and Windows (`.github/workflows/test.yml`).
+
+The harness started inside [PromptCut](https://github.com/Nice9Tian/PromptCut_Community) (`server/harness/`), which now depends on this package. Changes to the Agent loop, providers, skills or compaction are made here and reach the applications by a version bump.
+
 ## License
 
 MIT
